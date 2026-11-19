@@ -3,7 +3,7 @@ node {
 
     // Configure JDK and Maven
     def jdkHome = tool 'JAVA_HOME'
-    def mavenHome = tool 'Maven'
+    def mavenHome = tool 'MAVEN_HOME'
 
     env.JAVA_HOME = jdkHome
     env.PATH = "${jdkHome}\\bin;${mavenHome}\\bin;${env.PATH}"
