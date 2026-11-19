@@ -12,7 +12,7 @@ node {
         echo 'Downloading Blood Bank source code'
 
         git branch: 'main',
-            url: 'https://github.com/sarasrija/BloodBanksystem.git'
+            url: 'https://github.com/varanasi-sneha/internalpracticetoday.git'
     }
 
     stage('Clean') {
