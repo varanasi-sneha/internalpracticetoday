@@ -1,6 +1,6 @@
 
 node {
-    
+
     // Configure JDK and Maven
     def jdkHome = tool 'JDK'
     def mavenHome = tool 'Maven'
@@ -8,41 +8,61 @@ node {
     env.JAVA_HOME = jdkHome
     env.PATH = "${jdkHome}\\bin;${mavenHome}\\bin;${env.PATH}"
 
-    stage('Checkout') {
-        echo 'Downloading Blood Bank source code'
+    try {
 
-        git branch: 'main',
-            url: 'https://github.com/varanasi-sneha/internalpracticetoday.git'
-    }
+        stage('Checkout') {
+            echo 'Checking out Blood Bank Management System'
 
-    stage('Clean') {
-        echo 'Cleaning previous build files'
-        bat 'mvn clean'
-    }
-
-    stage('Install') {
-        echo 'Compiling and installing project'
-        bat 'mvn install -DskipTests'
-    }
-
-    stage('Test') {
-        echo 'Running unit tests'
-
-        catchError(buildResult: 'UNSTABLE',
-                   stageResult: 'FAILURE') {
-            bat 'mvn test'
+            git branch: 'main',
+                url: 'https://github.com/varanasi-sneha/internalpracticetoday.git'
         }
-    }
 
-    stage('Package') {
-        echo 'Creating WAR package'
-        bat 'mvn package -DskipTests'
-    }
+        stage('Clean') {
+            echo 'Cleaning previous build files'
+            bat 'mvn clean'
+        }
 
-    stage('Archive') {
+        stage('Install') {
+            echo 'Compiling and installing the project'
+            bat 'mvn install -DskipTests'
+        }
+
+        stage('Test') {
+            echo 'Executing unit tests'
+
+            catchError(
+                buildResult: 'UNSTABLE',
+                stageResult: 'FAILURE'
+            ) {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            echo 'Packaging Blood Bank application'
+            bat 'mvn package -DskipTests'
+        }
+
+        stage('Archive') {
+            echo "Build Number: ${env.BUILD_NUMBER}"
+
+            archiveArtifacts(
+                artifacts: 'target/*.war',
+                fingerprint: true
+            )
+        }
+
+    } catch (Exception e) {
+
+        echo "Pipeline failed: ${e.getMessage()}"
+        currentBuild.result = 'FAILURE'
+        throw e
+
+    } finally {
+
+        echo "Blood Bank Pipeline execution completed."
         echo "Build Number: ${env.BUILD_NUMBER}"
+        echo "Build Status: ${currentBuild.currentResult}"
 
-        archiveArtifacts artifacts: 'target/*.war',
-                         fingerprint: true
     }
 }
