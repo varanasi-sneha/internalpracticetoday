@@ -2,7 +2,7 @@
 node {
 
     // Configure JDK and Maven
-    def jdkHome = tool 'JDK'
+    def jdkHome = tool 'JAVA_HOME'
     def mavenHome = tool 'Maven'
 
     env.JAVA_HOME = jdkHome
